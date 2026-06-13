@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/library"
+previewPath = "/library/"
 title = "Library Management System"
 version = "1.0.0"
 
