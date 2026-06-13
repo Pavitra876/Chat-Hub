@@ -1,5 +1,6 @@
 package com.library.controller;
 
+import com.library.model.IssueRecord;
 import com.library.service.BookService;
 import com.library.service.IssueService;
 import com.library.service.MemberService;
@@ -48,6 +49,22 @@ public class IssueController {
             return "redirect:/issues/new";
         }
         return "redirect:/issues";
+    }
+
+    @GetMapping("/{id}/confirm-return")
+    public String confirmReturn(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
+        IssueRecord record = issueService.getById(id).orElse(null);
+        if (record == null) {
+            redirectAttrs.addFlashAttribute("error", "Issue record not found.");
+            return "redirect:/issues";
+        }
+        if (record.getStatus() == IssueRecord.Status.RETURNED) {
+            redirectAttrs.addFlashAttribute("error", "This book has already been returned.");
+            return "redirect:/issues";
+        }
+        model.addAttribute("issue", record);
+        model.addAttribute("activePage", "issues");
+        return "issues/confirm-return";
     }
 
     @PostMapping("/{id}/return")

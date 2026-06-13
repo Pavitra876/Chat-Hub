@@ -76,4 +76,9 @@ public class IssueRecord {
         long overdueDays = getDaysOverdue();
         return overdueDays > 0 ? BigDecimal.valueOf(overdueDays * 2) : BigDecimal.ZERO;
     }
+
+    public BigDecimal getAccruingFine() {
+        if (status == Status.RETURNED) return fine != null ? fine : BigDecimal.ZERO;
+        return calculateFine();
+    }
 }

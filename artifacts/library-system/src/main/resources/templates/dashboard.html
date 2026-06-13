@@ -36,7 +36,26 @@
             <div class="stat-card" style="background: linear-gradient(135deg,#b91c1c,#f87171)">
                 <div class="number" th:text="${overdueIssues}">0</div>
                 <div class="label"><i class="bi bi-clock-history me-1"></i>Overdue Returns</div>
-                <div class="mt-2" style="font-size:0.75rem;opacity:0.8">Need attention</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8"
+                     th:text="'₹' + ${pendingFines} + ' pending fines'"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6">
+            <div class="stat-card" style="background: linear-gradient(135deg,#b45309,#f59e0b)">
+                <div class="number" th:text="'₹' + ${pendingFines}">₹0</div>
+                <div class="label"><i class="bi bi-hourglass-split me-1"></i>Pending Fines (Accruing)</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8"
+                     th:text="${overdueIssues} + ' overdue book(s) at ₹2/day'"></div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="stat-card" style="background: linear-gradient(135deg,#065f46,#10b981)">
+                <div class="number" th:text="'₹' + ${finesCollected}">₹0</div>
+                <div class="label"><i class="bi bi-cash-stack me-1"></i>Total Fines Collected</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8">From returned books</div>
             </div>
         </div>
     </div>
@@ -78,11 +97,10 @@
                             <span th:unless="${issue.overdue}" class="badge badge-issued">Issued</span>
                         </td>
                         <td class="pe-3">
-                            <form th:action="@{/issues/{id}/return(id=${issue.id})}" method="post" class="d-inline">
-                                <button class="btn btn-outline-success btn-action">
-                                    <i class="bi bi-arrow-return-left"></i> Return
-                                </button>
-                            </form>
+                            <a th:href="@{/issues/{id}/confirm-return(id=${issue.id})}"
+                               class="btn btn-outline-success btn-action">
+                                <i class="bi bi-arrow-return-left"></i> Return
+                            </a>
                         </td>
                     </tr>
                 </tbody>

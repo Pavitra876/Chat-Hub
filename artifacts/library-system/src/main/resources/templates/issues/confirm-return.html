@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Confirm Return', ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <div class="page-header">
+        <div>
+            <h4><i class="bi bi-arrow-return-left me-2 text-success"></i>Confirm Book Return</h4>
+        </div>
+        <a th:href="@{/issues}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <div style="max-width:600px">
+        <div class="card mb-3">
+            <div class="card-header">Book &amp; Member Details</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="text-muted small mb-1">Book</div>
+                        <div class="fw-semibold" th:text="${issue.book.title}"></div>
+                        <div class="text-muted small" th:text="${issue.book.author}"></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small mb-1">Member</div>
+                        <div class="fw-semibold" th:text="${issue.member.name}"></div>
+                        <div class="text-muted small" th:text="${issue.member.memberId}"></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-muted small mb-1">Issue Date</div>
+                        <div th:text="${issue.issueDate}"></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-muted small mb-1">Due Date</div>
+                        <div th:class="${issue.overdue} ? 'text-danger fw-semibold' : ''"
+                             th:text="${issue.dueDate}"></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-muted small mb-1">Return Date</div>
+                        <div class="fw-semibold">Today</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${issue.overdue}" class="card mb-3 border-0"
+             style="background: linear-gradient(135deg,#fff7ed,#ffedd5); border-left: 4px solid #f97316 !important; border-radius:12px">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+                    <span class="fw-bold text-orange-700" style="color:#c2410c">Overdue Fine Applicable</span>
+                </div>
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background:rgba(249,115,22,0.1)">
+                            <div class="fw-bold fs-4" style="color:#ea580c" th:text="${issue.daysOverdue}">0</div>
+                            <div class="text-muted small">Days Overdue</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background:rgba(249,115,22,0.1)">
+                            <div class="fw-bold fs-5" style="color:#ea580c">₹2</div>
+                            <div class="text-muted small">Per Day</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background:rgba(239,68,68,0.15)">
+                            <div class="fw-bold fs-4 text-danger"
+                                 th:text="'₹' + ${issue.accruingFine}">₹0</div>
+                            <div class="text-muted small">Total Fine</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 small" style="color:#92400e">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Fine = <span th:text="${issue.daysOverdue}"></span> days × ₹2/day =
+                    <strong th:text="'₹' + ${issue.accruingFine}"></strong>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${issue.overdue}" class="card mb-3 border-0"
+             style="background: linear-gradient(135deg,#f0fdf4,#dcfce7); border-left: 4px solid #22c55e !important; border-radius:12px">
+            <div class="card-body d-flex align-items-center gap-3">
+                <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                <div>
+                    <div class="fw-semibold text-success">Returned On Time — No Fine</div>
+                    <div class="text-muted small">Returned before or on the due date</div>
+                </div>
+            </div>
+        </div>
+
+        <form th:action="@{/issues/{id}/return(id=${issue.id})}" method="post" class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-lg me-1"></i>
+                <span th:if="${issue.overdue}" th:text="'Confirm Return &amp; Collect ₹' + ${issue.accruingFine}">Confirm Return</span>
+                <span th:unless="${issue.overdue}">Confirm Return</span>
+            </button>
+            <a th:href="@{/issues}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</th:block>
+</body>
+</html>

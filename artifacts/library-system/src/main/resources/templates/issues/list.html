@@ -58,17 +58,20 @@
                             <span th:if="${issue.status.name() == 'RETURNED'}" class="badge badge-returned">Returned</span>
                         </td>
                         <td>
-                            <span th:if="${issue.fine != null and issue.fine > 0}" class="text-danger fw-semibold"
-                                  th:text="'₹' + ${issue.fine}"></span>
-                            <span th:unless="${issue.fine != null and issue.fine > 0}" class="text-muted">—</span>
+                            <span th:if="${issue.status.name() == 'RETURNED' and issue.fine != null and issue.fine > 0}"
+                                  class="text-danger fw-semibold" th:text="'₹' + ${issue.fine}"></span>
+                            <span th:if="${issue.status.name() == 'ISSUED' and issue.accruingFine != null and issue.accruingFine > 0}"
+                                  class="text-warning fw-semibold"
+                                  th:text="'₹' + ${issue.accruingFine} + ' (accruing)'"></span>
+                            <span th:if="${issue.accruingFine == null or (issue.accruingFine <= 0 and (issue.fine == null or issue.fine <= 0))}"
+                                  class="text-muted">—</span>
                         </td>
                         <td class="pe-3">
-                            <form th:if="${issue.status.name() == 'ISSUED'}"
-                                  th:action="@{/issues/{id}/return(id=${issue.id})}" method="post" class="d-inline">
-                                <button class="btn btn-outline-success btn-action">
-                                    <i class="bi bi-arrow-return-left"></i> Return
-                                </button>
-                            </form>
+                            <a th:if="${issue.status.name() == 'ISSUED'}"
+                               th:href="@{/issues/{id}/confirm-return(id=${issue.id})}"
+                               class="btn btn-outline-success btn-action">
+                                <i class="bi bi-arrow-return-left"></i> Return
+                            </a>
                             <span th:unless="${issue.status.name() == 'ISSUED'}" class="text-muted small">—</span>
                         </td>
                     </tr>

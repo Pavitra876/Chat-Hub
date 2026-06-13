@@ -8,7 +8,9 @@ import com.library.repository.IssueRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,5 +101,17 @@ public class IssueService {
 
     public long countTotalIssues() {
         return issueRecordRepository.count();
+    }
+
+    public BigDecimal getTotalFinesCollected() {
+        BigDecimal total = issueRecordRepository.sumFinesByStatus(IssueRecord.Status.RETURNED);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getTotalPendingFines() {
+        return issueRecordRepository.findOverdueRecords(LocalDate.now())
+                .stream()
+                .map(r -> BigDecimal.valueOf(ChronoUnit.DAYS.between(r.getDueDate(), LocalDate.now()) * 2))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

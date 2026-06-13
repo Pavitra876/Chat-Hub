@@ -25,6 +25,8 @@ public class DashboardController {
         model.addAttribute("overdueIssues", issueService.countOverdueIssues());
         model.addAttribute("totalIssues", issueService.countTotalIssues());
         model.addAttribute("recentIssues", issueService.getActiveIssues());
+        model.addAttribute("finesCollected", issueService.getTotalFinesCollected());
+        model.addAttribute("pendingFines", issueService.getTotalPendingFines());
         model.addAttribute("activePage", "dashboard");
         return "dashboard";
     }
