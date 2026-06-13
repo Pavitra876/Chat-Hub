@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Issue / Return', ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <div class="page-header">
+        <div>
+            <h4><i class="bi bi-arrow-left-right me-2 text-primary"></i>Issue / Return</h4>
+            <small class="text-muted" th:text="${#lists.size(issues)} + ' record(s)'"></small>
+        </div>
+        <a th:href="@{/issues/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Issue Book
+        </a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header d-flex gap-2">
+            <a th:href="@{/issues(filter='all')}"
+               th:class="${filter == 'all'} ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'">All</a>
+            <a th:href="@{/issues(filter='active')}"
+               th:class="${filter == 'active'} ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'">Active</a>
+            <a th:href="@{/issues(filter='overdue')}"
+               th:class="${filter == 'overdue'} ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'">Overdue</a>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(issues)}" class="text-center text-muted py-5">
+                <i class="bi bi-inbox" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No records found.</p>
+            </div>
+            <table th:unless="${#lists.isEmpty(issues)}" class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">#</th>
+                        <th>Book</th>
+                        <th>Member</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Fine</th>
+                        <th class="pe-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="issue, stat : ${issues}">
+                        <td class="ps-3 text-muted" th:text="${stat.count}"></td>
+                        <td class="fw-medium" th:text="${issue.book.title}"></td>
+                        <td th:text="${issue.member.name}"></td>
+                        <td th:text="${issue.issueDate}"></td>
+                        <td>
+                            <span th:text="${issue.dueDate}"
+                                  th:class="${issue.overdue} ? 'text-danger fw-semibold' : ''"></span>
+                        </td>
+                        <td th:text="${issue.returnDate != null ? issue.returnDate : '—'}"></td>
+                        <td>
+                            <span th:if="${issue.status.name() == 'ISSUED' and issue.overdue}" class="badge badge-overdue">Overdue</span>
+                            <span th:if="${issue.status.name() == 'ISSUED' and !issue.overdue}" class="badge badge-issued">Issued</span>
+                            <span th:if="${issue.status.name() == 'RETURNED'}" class="badge badge-returned">Returned</span>
+                        </td>
+                        <td>
+                            <span th:if="${issue.fine != null and issue.fine > 0}" class="text-danger fw-semibold"
+                                  th:text="'₹' + ${issue.fine}"></span>
+                            <span th:unless="${issue.fine != null and issue.fine > 0}" class="text-muted">—</span>
+                        </td>
+                        <td class="pe-3">
+                            <form th:if="${issue.status.name() == 'ISSUED'}"
+                                  th:action="@{/issues/{id}/return(id=${issue.id})}" method="post" class="d-inline">
+                                <button class="btn btn-outline-success btn-action">
+                                    <i class="bi bi-arrow-return-left"></i> Return
+                                </button>
+                            </form>
+                            <span th:unless="${issue.status.name() == 'ISSUED'}" class="text-muted small">—</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,12 @@
+kind = "web"
+previewPath = "/library"
+title = "Library Management System"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = ["/library"]
+localPort = 9000
+
+[services.development]
+run = "cd /home/runner/workspace/artifacts/library-system && mvn -q spring-boot:run"

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Dashboard', ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <div class="page-header">
+        <div>
+            <h4><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</h4>
+            <small class="text-muted">Library overview at a glance</small>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#1d4ed8,#3b82f6)">
+                <div class="number" th:text="${totalBooks}">0</div>
+                <div class="label"><i class="bi bi-journals me-1"></i>Total Books</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8" th:text="${availableBooks} + ' available'"></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#0f766e,#14b8a6)">
+                <div class="number" th:text="${totalMembers}">0</div>
+                <div class="label"><i class="bi bi-people me-1"></i>Total Members</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8" th:text="${activeMembers} + ' active'"></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#7c3aed,#a78bfa)">
+                <div class="number" th:text="${activeIssues}">0</div>
+                <div class="label"><i class="bi bi-arrow-left-right me-1"></i>Active Issues</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8" th:text="${totalIssues} + ' total ever'"></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card" style="background: linear-gradient(135deg,#b91c1c,#f87171)">
+                <div class="number" th:text="${overdueIssues}">0</div>
+                <div class="label"><i class="bi bi-clock-history me-1"></i>Overdue Returns</div>
+                <div class="mt-2" style="font-size:0.75rem;opacity:0.8">Need attention</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-list-check me-2"></i>Currently Issued Books</span>
+            <a th:href="@{/issues/new}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Issue Book
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(recentIssues)}" class="text-center text-muted py-5">
+                <i class="bi bi-inbox" style="font-size:2rem"></i>
+                <p class="mt-2 mb-0">No active issues. Issue a book to get started.</p>
+            </div>
+            <table th:unless="${#lists.isEmpty(recentIssues)}" class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Book</th>
+                        <th>Member</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th class="pe-3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="issue : ${recentIssues}">
+                        <td class="ps-3 fw-medium" th:text="${issue.book.title}"></td>
+                        <td th:text="${issue.member.name}"></td>
+                        <td th:text="${issue.issueDate}"></td>
+                        <td>
+                            <span th:text="${issue.dueDate}"
+                                  th:class="${issue.overdue} ? 'text-danger fw-bold' : ''"></span>
+                        </td>
+                        <td>
+                            <span th:if="${issue.overdue}" class="badge badge-overdue">Overdue</span>
+                            <span th:unless="${issue.overdue}" class="badge badge-issued">Issued</span>
+                        </td>
+                        <td class="pe-3">
+                            <form th:action="@{/issues/{id}/return(id=${issue.id})}" method="post" class="d-inline">
+                                <button class="btn btn-outline-success btn-action">
+                                    <i class="bi bi-arrow-return-left"></i> Return
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
